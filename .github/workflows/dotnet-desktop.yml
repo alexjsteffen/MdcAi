@@ -1,57 +1,50 @@
-name: WinUI 3 Unpackaged
-
 on:
   push:
   pull_request:
 
 jobs:
-
   build:
-
     strategy:
       matrix:
         configuration: [Release]
         platform: [x64]
-
-    runs-on: windows-latest  
-    
+    runs-on: windows-latest
     env:
       Solution_Name: Source/Desktop/MdcAi.sln
       Wap_Project_Directory: Source/Desktop/MdcAi
       Wap_Project_Path: Source/Desktop/MdcAi/MdcAi.csproj
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    # Install the .NET workload
-    - name: Install .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
+      # Install the .NET workload
+      - name: Install .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v1.0.2
+      # Add MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+      # Restore the application (populates the obj folder with RuntimeIdentifiers)
+      - name: Restore the application
+        run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+        env:
+          Configuration: ${{ matrix.configuration }}
 
-    # Build
-    - name: Build the app
-      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:Packaged=False /t:Publish /p:PublishReadyToRun=False
-      env:
-        Configuration: ${{ matrix.configuration }}
-        Platform: ${{ matrix.platform }}
+      # Build the application
+      - name: Build the app
+        run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:Packaged=False /t:Publish /p:PublishReadyToRun=False
+        env:
+          Configuration: ${{ matrix.configuration }}
+          Platform: ${{ matrix.platform }}
 
-    # Upload: https://github.com/marketplace/actions/upload-a-build-artifact
-    - name: Upload build output
-      uses: actions/upload-artifact@v3
-      with:
-        name: Build Output
-        path: Source/Desktop/MdcAi/bin
+      # Upload build output as an artifact named "WinUI 3 Unpackaged"
+      - name: Upload build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinUI 3 Unpackaged
+          path: Source/Desktop/MdcAi/bin
