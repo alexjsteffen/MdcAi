@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Install the .NET workload
+      # Install the .NET workload for app
       - name: Install .NET
         uses: actions/setup-dotnet@v3
         with:
